@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>H&M Recommendation Decision Lab</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root{--ink:#151515;--muted:#686868;--line:#dedbd5;--paper:#f4f1eb;--card:#fff;--red:#cf0a2c;--green:#137a53;--amber:#a55f00}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+    header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}
+    .nav{max-width:1240px;margin:auto;height:70px;display:flex;align-items:center;gap:28px;padding:0 24px}
+    .brand{font-size:21px;font-weight:900;letter-spacing:-1px}.brand b{color:var(--red)}
+    nav{margin-left:auto;display:flex;gap:20px}nav a{color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+    main{max-width:1240px;margin:auto;padding:42px 24px 80px}.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:stretch}
+    .hero-main{background:var(--ink);color:#fff;padding:44px;border-radius:2px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:800;color:#d7d2c8}
+    h1{font-size:clamp(38px,5vw,70px);line-height:.98;letter-spacing:-3px;margin:18px 0}.hero p{font-size:17px;line-height:1.55;max-width:690px;color:#ddd}
+    .decision-card{background:var(--red);color:#fff;padding:34px;display:flex;flex-direction:column;justify-content:space-between}.decision-card h2{font-size:29px;margin:12px 0}.decision-card p{color:#fff}
+    .section{margin-top:52px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:18px}.section h2{font-size:31px;letter-spacing:-1.2px;margin:0}.section-head p{max-width:620px;color:var(--muted);margin:0;line-height:1.5}
+    .grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,1fr)}.stat,.panel{background:var(--card);border:1px solid var(--line);padding:22px}.stat span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:30px;margin-top:10px}.stat small{color:var(--muted)}
+    .charts{grid-template-columns:2fr 1fr}.chart-wrap{height:300px}.model-grid{grid-template-columns:repeat(3,1fr)}
+    .metric strong{font-size:28px}.metric .tag,.tag{display:inline-block;padding:5px 8px;background:#eee;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+    .control-row{display:grid;grid-template-columns:1fr auto;gap:10px}.control-row select,.control-row input,button{height:44px;border:1px solid var(--line);background:#fff;padding:0 13px;font:inherit}button{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:800;cursor:pointer}button:hover{background:var(--red);border-color:var(--red)}
+    .profile{grid-template-columns:1fr 2fr;margin-top:14px}.profile dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}.profile dt{font-size:11px;text-transform:uppercase;color:var(--muted)}.profile dd{margin:4px 0 0;font-weight:800}
+    .products{grid-template-columns:repeat(4,1fr);margin-top:14px}.product{background:#fff;border:1px solid var(--line);min-height:225px;padding:18px;display:flex;flex-direction:column}.product .number{font-size:11px;color:var(--muted)}.product h3{font-size:17px;margin:18px 0 8px}.product p{font-size:13px;color:var(--muted);line-height:1.45;margin:0}.product .reason{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);color:var(--ink)}
+    .econ{grid-template-columns:1fr 1.4fr}.inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:5px}.field input{width:100%;height:40px;border:1px solid var(--line);padding:8px}.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.result{background:#f5f3ef;padding:14px}.result span{font-size:10px;color:var(--muted);text-transform:uppercase}.result strong{display:block;margin-top:6px;font-size:20px}.callout{padding:17px;border-left:5px solid var(--green);background:#edf7f2;margin-top:14px}.callout.stop{border-color:var(--red);background:#fff0f2}
+    .notice{border:1px solid #d7bd8e;background:#fff7e8;padding:14px;color:#744900;font-size:13px;line-height:1.45}.loading{padding:25px;text-align:center;color:var(--muted)}footer{border-top:1px solid var(--line);padding:30px 24px;color:var(--muted);font-size:12px}
+    @media(max-width:850px){.hero,.charts,.profile,.econ{grid-template-columns:1fr}.stats,.model-grid{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(2,1fr)}nav{display:none}}
+    @media(max-width:520px){main{padding:24px 14px}.hero-main{padding:28px}.stats,.model-grid,.products,.inputs,.result-grid{grid-template-columns:1fr}h1{letter-spacing:-2px}}
+  </style>
+</head>
+<body>
+<header><div class="nav"><div class="brand"><b>H&M</b> / Decision Lab</div><nav><a href="#overview">Overview</a><a href="#customer">Customer</a><a href="#economics">Decision</a><a href="#experiment">Experiment</a></nav></div></header>
+<main>
+  <section class="hero">
+    <div class="hero-main"><div class="eyebrow">AI-assisted marketing intervention</div><h1>Right products.<br>Right customer.<br>Measured impact.</h1><p>A decision tool for selecting up to 12 weekly product recommendations using purchase history, customer preferences and recent product popularity.</p></div>
+    <div class="decision-card"><div><div class="eyebrow">Recurring decision</div><h2>What should H&M recommend this week?</h2></div><p>Predictions support the decision. A holdout experiment determines whether recommendations create incremental profit.</p></div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><h2>Sample overview</h2><p>Measured from the uploaded transaction sample. Prices are normalized Kaggle values, not KZT retail prices.</p></div>
+    <div class="grid stats" id="stats"><div class="loading">Loading measured data…</div></div>
+    <div class="notice" id="notice" style="margin-top:14px"></div>
+    <div class="grid charts" style="margin-top:14px"><div class="panel"><h3>Transactions over time</h3><div class="chart-wrap"><canvas id="trendChart"></canvas></div></div><div class="panel"><h3>Product groups</h3><div class="chart-wrap"><canvas id="groupChart"></canvas></div></div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Offline validation</h2><p>The final seven days are held out. This measures predictive relevance, not causal lift.</p></div>
+    <div class="grid model-grid" id="metrics"></div>
+  </section>
+
+  <section class="section" id="customer">
+    <div class="section-head"><h2>Customer recommender</h2><p>Select a sampled customer. The hybrid method combines preferred product groups with recent popularity and excludes recently purchased items.</p></div>
+    <div class="control-row"><select id="customerSelect"></select><button id="recommendBtn">Generate 12 recommendations</button></div>
+    <div class="grid profile" id="profile"></div>
+    <div class="grid products" id="products"></div>
+  </section>
+
+  <section class="section" id="economics">
+    <div class="section-head"><h2>Economic decision rule</h2><p>All editable business inputs are assumptions. Change any value and the threshold, audience and expected net update immediately.</p></div>
+    <div class="grid econ">
+      <div class="panel"><div class="inputs">
+        <div class="field"><label>Purchase probability</label><input id="probability" type="number" step="0.01" value="0.20"></div>
+        <div class="field"><label>Delivery cost, KZT</label><input id="delivery_cost" type="number" value="20"></div>
+        <div class="field"><label>Item price, KZT</label><input id="item_price" type="number" value="12000"></div>
+        <div class="field"><label>Gross margin rate</label><input id="margin_rate" type="number" step="0.01" value="0.45"></div>
+        <div class="field"><label>Incremental effect</label><input id="incremental_effect" type="number" step="0.01" value="0.20"></div>
+        <div class="field"><label>Eligible audience</label><input id="audience" type="number" value="10000"></div>
+        <div class="field"><label>Weekly capacity</label><input id="capacity" type="number" value="7000"></div>
+      </div><p><span class="tag">Assumption</span> These inputs are scenarios because Kaggle does not contain cost, margin, exposure or causal-lift data.</p></div>
+      <div class="panel"><div class="result-grid" id="econResults"></div><div class="callout" id="decision"></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="experiment">
+    <div class="section-head"><h2>Measurement plan</h2><p>Offline accuracy is not enough. The business claim requires a randomized holdout.</p></div>
+    <div class="grid model-grid">
+      <div class="panel"><span class="tag">Treatment</span><h3>Personalized top 12</h3><p>Eligible customers see the ranked recommendation block for four weeks.</p></div>
+      <div class="panel"><span class="tag">Holdout</span><h3>Business as usual</h3><p>Randomly assigned customers retain the standard experience over the same period.</p></div>
+      <div class="panel"><span class="tag">Kill criterion</span><h3>Stop on non-positive lift</h3><p>Stop if incremental net profit is zero or negative after the planned test.</p></div>
+    </div>
+  </section>
+</main>
+<footer><div style="max-width:1240px;margin:auto">Academic prototype · H&M Kaggle data · No affiliation with H&M Group · Measured, estimated and assumed values are labelled separately.</div></footer>
+<script>
+const fmt=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n);
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'KZT',maximumFractionDigits:0}).format(n);
+let overview;
+async function get(url){const r=await fetch(url);if(!r.ok)throw new Error((await r.json()).detail||'Request failed');return r.json()}
+async function init(){
+  overview=await get('/api/overview'); const o=overview.overview;
+  document.getElementById('stats').innerHTML=[['Customers',fmt(o.customers)],['Products',fmt(o.products)],['Transactions',fmt(o.transactions)],['Date range',`${o.date_min}<br><small>to ${o.date_max}</small>`]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');
+  document.getElementById('notice').textContent=o.sample_notice;
+  const m=overview.metrics;document.getElementById('metrics').innerHTML=[['Baseline MAP@12',m.baseline_map12,'Measured'],['Personalized MAP@12',m.personalized_map12,'Measured'],['Precision@12',m.precision12,'Measured'],['Recall@12',m.recall12,'Measured'],['Catalog coverage',m.coverage,'Measured'],['Validation customers',fmt(m.validation_customers),'Measured']].map(x=>`<div class="panel metric"><span class="tag">${x[2]}</span><h3>${x[0]}</h3><strong>${x[1]}</strong></div>`).join('');
+  new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:overview.monthly.map(x=>x.month),datasets:[{data:overview.monthly.map(x=>x.transactions),borderColor:'#cf0a2c',backgroundColor:'rgba(207,10,44,.1)',fill:true,tension:.25,label:'Transactions'}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:8}},y:{beginAtZero:true}}}});
+  new Chart(document.getElementById('groupChart'),{type:'bar',data:{labels:overview.groups.map(x=>x.name),datasets:[{data:overview.groups.map(x=>x.value),backgroundColor:'#151515'}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  const ids=await get('/api/customers?limit=50');document.getElementById('customerSelect').innerHTML=ids.map(x=>`<option value="${x}">${x.slice(0,16)}…</option>`).join('');
+  await loadCustomer(); await updateEconomics();
+}
+async function loadCustomer(){
+  const id=document.getElementById('customerSelect').value;if(!id)return;
+  const [p,r]=await Promise.all([get(`/api/customer/${id}`),get(`/api/recommend/${id}`)]);
+  document.getElementById('profile').innerHTML=`<div class="panel"><h3>Customer profile</h3><dl><div><dt>Age</dt><dd>${p.age??'Unknown'}</dd></div><div><dt>Transactions</dt><dd>${p.transactions}</dd></div><div><dt>Last purchase</dt><dd>${p.last_purchase}</dd></div><div><dt>Club status</dt><dd>${p.club_status}</dd></div></dl></div><div class="panel"><h3>Preference signal</h3><p>${p.favorite_groups.join(' · ')}</p><p style="color:var(--muted)">The profile uses only purchase history available in the sample.</p></div>`;
+  document.getElementById('products').innerHTML=r.recommendations.map((x,i)=>`<article class="product"><div class="number">#${i+1} · ${x.article_id}</div><h3>${x.name}</h3><p>${x.type} · ${x.colour}<br>${x.department}</p><p class="reason">${x.reason}<br><b>Score: ${x.score}</b></p></article>`).join('');
+}
+async function updateEconomics(){
+  const ids=['probability','delivery_cost','item_price','margin_rate','incremental_effect','audience','capacity'];const q=ids.map(id=>`${id}=${encodeURIComponent(document.getElementById(id).value)}`).join('&');
+  try{const e=await get('/api/economics?'+q);document.getElementById('econResults').innerHTML=[['Break-even probability',(e.break_even_probability*100).toFixed(2)+'%'],['Recommended audience',fmt(e.recommended_audience)],['Expected conversions',fmt(e.expected_incremental_conversions)],['Contact cost',money(e.contact_cost)],['Gross margin',money(e.expected_gross_margin)],['Expected net',money(e.expected_net)],['Binding constraint',e.binding_constraint],['Decision',e.decision]].map(x=>`<div class="result"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');const d=document.getElementById('decision');d.className='callout '+(e.expected_net<=0?'stop':'');d.innerHTML=`<b>${e.decision}</b><br>${e.kill_criterion}`;}catch(err){document.getElementById('decision').textContent=err.message}
+}
+document.getElementById('recommendBtn').addEventListener('click',loadCustomer);document.querySelectorAll('#economics input').forEach(x=>x.addEventListener('input',updateEconomics));init().catch(e=>document.body.innerHTML=`<main><div class="notice">${e.message}</div></main>`);
+</script>
+</body>
+</html>
