@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 
 ROOT = Path(__file__).resolve().parent
-DATA_PATH = ROOT / "data" / "processed" / "app_data.json.gz"
+DATA_PATH = ROOT / "app_data.json.gz"
 
 if not DATA_PATH.exists():
     raise RuntimeError("Processed data missing. Run: python preprocess.py")
